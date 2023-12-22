@@ -3,6 +3,7 @@ import time
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 from pyrogram import Client, filters
+from pytz import utc
 from apscheduler.schedulers.asyncio import AsyncIOScheduler  # Import the scheduler
 
 API_ID= 16536417
@@ -25,7 +26,7 @@ app = Client(
 mongo_client = MongoClient(MONGO_URI)
 db = mongo_client["file_records"]
 
-scheduler = AsyncIOScheduler()  # Create a scheduler instance
+scheduler = AsyncIOScheduler(timezone=utc)  # Create a scheduler instance
 
 # Define your scheduled job
 async def delete_old_files():
