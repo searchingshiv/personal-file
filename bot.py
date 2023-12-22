@@ -107,7 +107,7 @@ async def non_admin_message(client, message):
 
 if __name__ == '__main__':
     # Start a job to delete old files every 15 seconds
-    app.scheduler.add_job(delete_old_files, trigger="interval", seconds=15)
+    #app.scheduler.add_job(delete_old_files, trigger="interval", seconds=15)
     scheduler.start()
 
 
