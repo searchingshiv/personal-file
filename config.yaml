@@ -1,17 +1,18 @@
 # config.yaml
 
 api:
-  id: YOUR_API_ID
-  hash: YOUR_API_HASH
-  token: YOUR_BOT_TOKEN
+  id: 16536417
+  hash: f6e58a549da642d7b765744a2f82c6d9
+  token: 6626911044:AAGiOxjN-ad_sjd0wN19pXGCaXngHA_J5pM
 
 mongo:
-  uri: YOUR_MONGO_URI
+  uri: mongodb+srv://trumbot:trumbot@cluster0.cfkaeno.mongodb.net/?retryWrites=true&w=majority
 
 admin:
   user_ids:
-    - 123456789  # Replace with your admin user IDs
+    - 563896360
+    - 921365334  # Replace with your admin user IDs
 
 channels:
-  log_channel_id: -100123456789  # Replace with the ID of your log channel
-  db_channel_id: -100987654321  # Replace with the ID of your database channel
+  log_channel_id: -1001623353378  # Replace with the ID of your log channel
+  db_channel_id: -1001623353378  # Replace with the ID of your database channel
