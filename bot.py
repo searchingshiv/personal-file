@@ -1,11 +1,21 @@
-# main.py
-
 import os
+import yaml
+import time
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 from pyrogram import Client, filters
-from pyrogram.types import Message
-from config import API_ID, API_HASH, BOT_TOKEN, MONGO_URI, ADMIN_USER_IDS, LOG_CHANNEL_ID, DB_CHANNEL_ID, DOMAIN, START_TEXT
+from apscheduler.schedulers.asyncio import AsyncIOScheduler  # Import the scheduler
+
+# Load configuration from config.py
+API_ID = os.getenv("API_ID")
+API_HASH = os.getenv("API_HASH")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+MONGO_URI = os.getenv("MONGO_URI")
+ADMIN_USER_IDS = list(map(int, os.getenv("ADMIN_USER_IDS").split(",")))
+LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID"))
+DB_CHANNEL_ID = int(os.getenv("DB_CHANNEL_ID"))
+DOMAIN = os.getenv("DOMAIN")
+START_TEXT = os.getenv("START_TEXT")
 
 app = Client(
     "your_bot",
@@ -17,19 +27,18 @@ app = Client(
 mongo_client = MongoClient(MONGO_URI)
 db = mongo_client["file_records"]
 
-# Constants
-FILE_RECORDS_COLLECTION = "files"
+scheduler = AsyncIOScheduler()  # Create a scheduler instance
 
-# Functions
-async def send_message_to_log_channel(message_content):
-    await app.send_message(LOG_CHANNEL_ID, message_content)
-
-async def send_message_to_db_channel(message_content):
-    await app.send_message(DB_CHANNEL_ID, message_content)
-
+# Define your scheduled job
 async def delete_old_files():
     one_hour_ago = datetime.now() - timedelta(hours=1)
-    db[FILE_RECORDS_COLLECTION].delete_many({"timestamp": {"$lt": one_hour_ago}})
+    db.files.delete_many({"timestamp": {"$lt": one_hour_ago}})
+
+# Add your scheduled job
+scheduler.add_job(delete_old_files, trigger="interval", seconds=15)
+
+# Start the scheduler
+scheduler.start()
 
 # Handlers
 @app.on_message(filters.command("start"))
