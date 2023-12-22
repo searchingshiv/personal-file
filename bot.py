@@ -1,3 +1,7 @@
+
+
+# main.py
+
 import os
 import yaml
 import time
@@ -5,21 +9,7 @@ from datetime import datetime, timedelta
 from pymongo import MongoClient
 from pyrogram import Client, filters
 from pyrogram.types import Message
-
-# Load configuration from config.yaml
-with open('config.yaml', 'r') as config_file:
-    config = yaml.safe_load(config_file)
-
-API_ID = config['api']['id']
-API_HASH = config['api']['hash']
-BOT_TOKEN = config['api']['token']
-
-MONGO_URI = config['mongo']['uri']
-
-ADMIN_USER_IDS = config['admin']['user_ids']
-
-LOG_CHANNEL_ID = config['channels']['log_channel_id']
-DB_CHANNEL_ID = config['channels']['db_channel_id']
+from config import API_ID, API_HASH, BOT_TOKEN, MONGO_URI, ADMIN_USER_IDS, LOG_CHANNEL_ID, DB_CHANNEL_ID, DOMAIN, START_TEXT
 
 app = Client(
     "your_bot",
