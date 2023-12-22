@@ -60,7 +60,7 @@ async def handle_file(client, message):
 
     db[FILE_RECORDS_COLLECTION].insert_one(file_record)
 
-    file_link = f'{DOMAIN}/get_file/{file_record["_id"]}'
+    file_link = f'{DOMAIN}/testbotfu_bot/{file_record["_id"]}'
     file_record["file_link"] = file_link
 
     db[FILE_RECORDS_COLLECTION].update_one({"_id": file_record["_id"]}, {"$set": {"file_link": file_link}})
