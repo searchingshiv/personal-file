@@ -1,10 +1,6 @@
-
-
 # main.py
 
 import os
-import yaml
-import time
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 from pyrogram import Client, filters
@@ -21,9 +17,24 @@ app = Client(
 mongo_client = MongoClient(MONGO_URI)
 db = mongo_client["file_records"]
 
+# Constants
+FILE_RECORDS_COLLECTION = "files"
+
+# Functions
+async def send_message_to_log_channel(message_content):
+    await app.send_message(LOG_CHANNEL_ID, message_content)
+
+async def send_message_to_db_channel(message_content):
+    await app.send_message(DB_CHANNEL_ID, message_content)
+
+async def delete_old_files():
+    one_hour_ago = datetime.now() - timedelta(hours=1)
+    db[FILE_RECORDS_COLLECTION].delete_many({"timestamp": {"$lt": one_hour_ago}})
+
+# Handlers
 @app.on_message(filters.command("start"))
 async def start_command(client, message):
-    await message.reply_text('Send me a file.')
+    await message.reply_text(START_TEXT)
 
 @app.on_message(filters.document & filters.user(ADMIN_USER_IDS))
 async def handle_file(client, message):
@@ -37,15 +48,15 @@ async def handle_file(client, message):
         "timestamp": datetime.now(),
     }
 
-    db.files.insert_one(file_record)
+    db[FILE_RECORDS_COLLECTION].insert_one(file_record)
 
-    file_link = f'https://yourdomain.com/get_file/{file_record["_id"]}'
+    file_link = f'{DOMAIN}/get_file/{file_record["_id"]}'
     file_record["file_link"] = file_link
 
-    db.files.update_one({"_id": file_record["_id"]}, {"$set": {"file_link": file_link}})
+    db[FILE_RECORDS_COLLECTION].update_one({"_id": file_record["_id"]}, {"$set": {"file_link": file_link}})
 
     # Send a message to the database channel
-    await app.send_message(DB_CHANNEL_ID, f'New file link: {file_link}')
+    await send_message_to_db_channel(f'New file link: {file_link}')
 
     await message.reply_text(f'File link: {file_link}')
 
@@ -65,7 +76,7 @@ async def batch_command(client, message):
     start_time = datetime.strptime(start_link, "%Y-%m-%d %H:%M:%S")
     stop_time = datetime.strptime(stop_link, "%Y-%m-%d %H:%M:%S")
 
-    file_links = db.files.find(
+    file_links = db[FILE_RECORDS_COLLECTION].find(
         {"timestamp": {"$gte": start_time, "$lte": stop_time}},
         {"file_link": 1, "_id": 0},
     )
@@ -73,7 +84,7 @@ async def batch_command(client, message):
     one_link = '\n'.join(link["file_link"] for link in file_links)
 
     # Send a message to the database channel
-    await app.send_message(DB_CHANNEL_ID, f'One link for the batch:\n{one_link}')
+    await send_message_to_db_channel(f'One link for the batch:\n{one_link}')
 
     await message.reply_text(f'One link for the batch:\n{one_link}')
 
@@ -82,14 +93,9 @@ async def non_admin_message(client, message):
     await message.reply_text('Admin will reply soon.')
 
     # Log the message to the log channel
-    await app.send_message(
-        LOG_CHANNEL_ID,
+    await send_message_to_log_channel(
         f"User {message.from_user.id} ({message.from_user.username}) sent a message:\n\n{message.text}"
     )
-
-async def delete_old_files():
-    one_hour_ago = datetime.now() - timedelta(hours=1)
-    db.files.delete_many({"timestamp": {"$lt": one_hour_ago}})
 
 if __name__ == '__main__':
     # Start a job to delete old files every 15 seconds
