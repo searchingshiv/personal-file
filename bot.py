@@ -10,9 +10,9 @@ API_ID= 16536417
 API_HASH= "f6e58a549da642d7b765744a2f82c6d9"
 BOT_TOKEN= "6626911044:AAGiOxjN-ad_sjd0wN19pXGCaXngHA_J5pM"
 MONGO_URI= "mongodb+srv://trumbot:trumbot@cluster0.cfkaeno.mongodb.net/?retryWrites=true&w=majority"
-ADMIN_USER_IDS = [563896360,921365334]
-LOG_CHANNEL_ID= -1001623353378  
-DB_CHANNEL_ID= -1001623353378  
+ADMIN_USER_IDS = [563896360, 921365334]
+LOG_CHANNEL_ID= -1001623353378
+DB_CHANNEL_ID= -1001623353378
 DOMAIN= "https://telegram.dog"
 START_TEXT= "Fuck You" 
 
@@ -64,8 +64,6 @@ async def handle_file(client, message):
     db[FILE_RECORDS_COLLECTION].update_one({"_id": file_record["_id"]}, {"$set": {"file_link": file_link}})
 
     # Send a message to the database channel
-    await send_message_to_db_channel(f'New file link: {file_link}')
-
     await message.reply_text(f'File link: {file_link}')
 
 @app.on_message(filters.command("batch") & filters.user(ADMIN_USER_IDS))
@@ -92,24 +90,12 @@ async def batch_command(client, message):
     one_link = '\n'.join(link["file_link"] for link in file_links)
 
     # Send a message to the database channel
-    await send_message_to_db_channel(f'One link for the batch:\n{one_link}')
-
     await message.reply_text(f'One link for the batch:\n{one_link}')
 
 @app.on_message(filters.text & ~filters.user(ADMIN_USER_IDS))
 async def non_admin_message(client, message):
     await message.reply_text('Admin will reply soon.')
 
-    # Log the message to the log channel
-    await send_message_to_log_channel(
-        f"User {message.from_user.id} ({message.from_user.username}) sent a message:\n\n{message.text}"
-    )
-
 if __name__ == '__main__':
-    # Start a job to delete old files every 15 seconds
-    #app.scheduler.add_job(delete_old_files, trigger="interval", seconds=15)
-    #scheduler.start()
-
-
     # Start the bot
     app.run()
