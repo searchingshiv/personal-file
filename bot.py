@@ -1,6 +1,5 @@
 import os
 import time
-import APScheduler
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 from pyrogram import Client, filters
