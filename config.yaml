@@ -1,0 +1,17 @@
+# config.yaml
+
+api:
+  id: YOUR_API_ID
+  hash: YOUR_API_HASH
+  token: YOUR_BOT_TOKEN
+
+mongo:
+  uri: YOUR_MONGO_URI
+
+admin:
+  user_ids:
+    - 123456789  # Replace with your admin user IDs
+
+channels:
+  log_channel_id: -100123456789  # Replace with the ID of your log channel
+  db_channel_id: -100987654321  # Replace with the ID of your database channel
