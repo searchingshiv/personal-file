@@ -65,8 +65,18 @@ async def handle_file(client, message):
 
     db[FILE_RECORDS_COLLECTION].update_one({"_id": file_record["_id"]}, {"$set": {"file_link": file_link}})
 
+    # Download the file
+    file_path = await client.download_media(message, file_name="downloads/")
+
     # Send a message to the database channel
+    await send_message_to_db_channel(f'New file link: {file_link}')
+
+    # Reply with the file link
     await message.reply_text(f'File link: {file_link}')
+
+    # Send the file to the user
+    await message.reply_document(file_path)
+
 
 @app.on_message(filters.command("batch") & filters.user(ADMIN_USER_IDS))
 async def batch_command(client, message):
