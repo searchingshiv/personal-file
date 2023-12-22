@@ -6,15 +6,17 @@ from pyrogram import Client, filters
 from pytz import utc
 from apscheduler.schedulers.asyncio import AsyncIOScheduler  # Import the scheduler
 
-API_ID= 16536417
-API_HASH= "f6e58a549da642d7b765744a2f82c6d9"
-BOT_TOKEN= "6626911044:AAGiOxjN-ad_sjd0wN19pXGCaXngHA_J5pM"
-MONGO_URI= "mongodb+srv://trumbot:trumbot@cluster0.cfkaeno.mongodb.net/?retryWrites=true&w=majority"
+API_ID = 16536417
+API_HASH = "f6e58a549da642d7b765744a2f82c6d9"
+BOT_TOKEN = "6626911044:AAGiOxjN-ad_sjd0wN19pXGCaXngHA_J5pM"
+MONGO_URI = "mongodb+srv://trumbot:trumbot@cluster0.cfkaeno.mongodb.net/?retryWrites=true&w=majority"
 ADMIN_USER_IDS = [563896360, 921365334]
-LOG_CHANNEL_ID= -1001623353378
-DB_CHANNEL_ID= -1001623353378
-DOMAIN= "https://telegram.dog"
-START_TEXT= "Fuck You" 
+LOG_CHANNEL_ID = -1001623353378
+DB_CHANNEL_ID = -1001623353378
+DOMAIN = "https://telegram.dog"
+START_TEXT = "Fuck You"
+
+FILE_RECORDS_COLLECTION = "file_records"  # Define your collection name here
 
 app = Client(
     "your_bot",
@@ -24,7 +26,7 @@ app = Client(
 )
 
 mongo_client = MongoClient(MONGO_URI)
-db = mongo_client["file_records"]
+db = mongo_client[FILE_RECORDS_COLLECTION]
 
 scheduler = AsyncIOScheduler(timezone=utc)  # Create a scheduler instance
 
@@ -97,5 +99,4 @@ async def non_admin_message(client, message):
     await message.reply_text('Admin will reply soon.')
 
 if __name__ == '__main__':
-    # Start the bot
     app.run()
